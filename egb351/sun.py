@@ -43,12 +43,14 @@ def equation_of_time(doy):
 def solar_time(t,L_tz,L_loc,ignore_leapday=False):
     doy = get_day_of_year(t,ignore_leapday=ignore_leapday)
     E = equation_of_time(doy)
-    return(t.hour+t.minute/60.0+t.second/3600) + 4/60.0*(L_tz-L_loc) + E/60.0 # hours
+    st = t + timedelta(minutes = 4*(L_tz-L_loc) + E)
+    return st
 
 def compute_solar_angles(standard_clock_time: datetime,φ,L,L_tz,force_south_as_zero=False,ignore_leapday=False):
     azimuth_zero = "South"
     doy = get_day_of_year(standard_clock_time,ignore_leapday=ignore_leapday)
-    t_solar = solar_time(standard_clock_time,L_tz,L,ignore_leapday=ignore_leapday)
+    sdt = solar_time(standard_clock_time,L_tz,L,ignore_leapday=ignore_leapday)
+    t_solar = sdt.hour + sdt.minute/60 + sdt.second/3600 + sdt.microsecond/1e6/3600
     ω = 15*(t_solar-12.0)
     δ = declination(doy)
     θ = acosd( sind(δ)*sind(φ)+cosd(δ)*cosd(φ)*cosd(ω) )
