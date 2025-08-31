@@ -75,8 +75,7 @@ def one_axis_tracking_angles(θz,γs,γ_axis,output='tilt_azimuth'):
             γs_pfs = -γs
 
         rotation = atand(sind(γs_pfs-γ_pfs)/tand(α))
-        return rotation
-        
+        return rotation      
 class parabolic_trough_1D_transient:
     def __init__(self):              
         self.envelope = {'material':None,
