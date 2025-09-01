@@ -1,8 +1,8 @@
 function [load_data,wind_and_solar_data,costs] = get_project_data( ...
     data_dir,student_number,base_load_file,wind_and_solar_file)
-% GET_PROJECT_DATA Load demand, resource, and cost data EGB351 project.
+% GET_MY_DATA Load demand, resource, and cost data EGB351 project.
 %
-%   [LOAD_DATA, WIND_AND_SOLAR_DATA, COSTS] = GET_PROJECT_DATA(DATA_DIR,
+%   [LOAD_DATA, WIND_AND_SOLAR_DATA, COSTS] = GET_MY_DATA(DATA_DIR,
 %   STUDENT_NUMBER, LOAD_FILE, WIND_AND_SOLAR_FILE) reads and processes
 %   demand (load) data, NASA POWER|DAV Single POint wind and solar resource 
 %   data,(see:https://power.larc.nasa.gov/data-access-viewer/) and
@@ -45,7 +45,7 @@ function [load_data,wind_and_solar_data,costs] = get_project_data( ...
 %         This ensures unique variations for different users while keeping
 %         overall magnitudes realistic.
 %       • WIND_AND_SOLAR_FILE is assumed to follow NASA DAV formatting,
-%         with headers beginning on row 19 and data on row 20 onward.
+%         with -END HEADER- denoting the beginning of the data.
 %       • All cost data are illustrative and would need updating for real 
 %         projects.
 %
