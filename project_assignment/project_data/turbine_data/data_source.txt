@@ -1,0 +1,3 @@
+https://github.com/NREL/turbine-models/tree/main
+
+See LICENSE.txt for permissions. 

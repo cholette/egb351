@@ -1,8 +1,8 @@
 function [load_data,wind_and_solar_data,costs] = get_project_data( ...
     data_dir,student_number,base_load_file,wind_and_solar_file)
-% GET_MY_DATA Load demand, resource, and cost data EGB351 project.
+% GET_PROJECT_DATA Load demand, resource, and cost data EGB351 project.
 %
-%   [LOAD_DATA, WIND_AND_SOLAR_DATA, COSTS] = GET_MY_DATA(DATA_DIR,
+%   [LOAD_DATA, WIND_AND_SOLAR_DATA, COSTS] = GET_PROJECT_DATA(DATA_DIR,
 %   STUDENT_NUMBER, LOAD_FILE, WIND_AND_SOLAR_FILE) reads and processes
 %   demand (load) data, NASA POWER|DAV Single POint wind and solar resource 
 %   data,(see:https://power.larc.nasa.gov/data-access-viewer/) and
@@ -14,7 +14,7 @@ function [load_data,wind_and_solar_data,costs] = get_project_data( ...
 %                            data files. Must include trailing file
 %                            separator "/".
 %
-%       STUDENT_NUMBER     - Your student number.
+%       STUDENT_NUMBER     - Your student number (integer).
 %
 %       BASE_LOAD_FILE     - String. File name of the Excel/CSV file
 %                            containing base load data.
@@ -25,8 +25,8 @@ function [load_data,wind_and_solar_data,costs] = get_project_data( ...
 %
 %   Outputs:
 %       LOAD_DATA          - Table with two columns:
-%                               timestamp : datetime vector
-%                               load_MW   : demand in MW
+%                            timestamp : datetime vector
+%                            load_MW   : demand in MW
 %
 %       WIND_AND_SOLAR_DATA- Table containing NASA POWER solar and wind
 %                            variables with an added timestamp column.
@@ -51,7 +51,7 @@ function [load_data,wind_and_solar_data,costs] = get_project_data( ...
 %
 %   Example:
 %       % Load my datasets with deterministic scaling
-%       [loadTbl, resourceTbl, costs] = get_my_data("data/", 0, ...
+%       [loadTbl, resourceTbl, costs] = get_project_data("data/", 0, ...
 %                       "queensland_load.xlsx", "nasa_power_data.csv");
 %
 %       % Plot load profile
