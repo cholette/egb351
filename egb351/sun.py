@@ -9,6 +9,7 @@ from calendar import isleap
 from ipywidgets import interact
 import ipywidgets as widgets
 from .constants import h,c,kB,σ
+tol = np.finfo(np.float64).tiny
 
 def get_day_of_year(d,ignore_leapday=False):
     doy = d.timetuple().tm_yday # day of year
@@ -54,7 +55,7 @@ def compute_solar_angles(standard_clock_time: datetime,φ,L,L_tz,force_south_as_
     ω = 15*(t_solar-12.0)
     δ = declination(doy)
     θ = acosd( sind(δ)*sind(φ)+cosd(δ)*cosd(φ)*cosd(ω) )
-    γ = np.sign(ω) * np.abs( acosd( (cosd(θ)*sind(φ) - sind(δ))/(sind(θ)*cosd(φ)) ) )
+    γ = np.sign(ω+tol) * np.abs( acosd( (cosd(θ)*sind(φ) - sind(δ))/(sind(θ)*cosd(φ)) ) )
 
     if (φ < 0) and (not force_south_as_zero): # southern hemisphere and convention is not forced to use south as zero
         azimuth_zero = "North" # set azimuth zero to N
