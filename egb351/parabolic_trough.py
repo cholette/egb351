@@ -182,7 +182,7 @@ class parabolic_trough_1D_transient:
             Nu = 4.36
         else:
             f2 = (1.82*log10(ReD)-1.64)**(-2.0)
-            Nu = f2/8.0 * (ReD-100)*Pr / (1+12.7*sqrt(f2/8.0) * (Pr**(2.0/3.0) - 1)) *(Pr/Prw)**0.11
+            Nu = f2/8.0 * (ReD-1000)*Pr / (1+12.7*sqrt(f2/8.0) * (Pr**(2.0/3.0) - 1)) *(Pr/Prw)**0.11
         
         return pi*Nu*k*(T_absorber - T_htf)
 
