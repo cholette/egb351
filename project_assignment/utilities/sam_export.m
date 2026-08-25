@@ -36,9 +36,7 @@ function sam_export(dat,date_range,lat,lon,tz,name,type,elevation)
 %       • For TYPE="wind":
 %           - Wind speed/direction variable names are reformatted with
 %             heights in meters.
-%           - Air pressure is assumed at 10m (warning displayed).
-%           - Temperature at 2m is used as a proxy for 10m (warning displayed).
-%
+
 %       • For TYPE="solar":
 %           - Extracts GHI, DNI, DHI, temperature, wind speed, and pressure.
 %           - Pressure is converted from Pa to mbar.
@@ -98,17 +96,14 @@ switch lower(type)
             elseif contains(vn,"HR")
                 newNames{ii} = "Hour";
             elseif contains(vn,"PS")
-                newNames{ii} = "Air pressure at 10m (Pa)";
+                newNames{ii} = "Air pressure at 0m (Pa)";
             elseif contains(vn,"T2M")
-                newNames{ii} = "Air Temperature at 10m (C)";
+                newNames{ii} = "Air Temperature at 2m (C)";
             end
         end
         
         newNames = cellfun(@char,newNames,'UniformOutput',false); 
         dat = renamevars(dat,varnames,newNames);
-        
-        disp("Warning: Arbitrarily setting pressure data to be at 10m.")
-        disp("Warning: Temperature at 10m is not available in MERRA-2 data. Using temperature at 2m instead.")
         disp("Writing wind data to "+name)
         
         writetable(dat,name)

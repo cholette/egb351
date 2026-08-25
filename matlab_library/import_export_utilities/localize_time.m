@@ -10,7 +10,8 @@ function new_data = localize_time(nasa_data,new_offset,original_offset)
 %
 %   Inputs:
 %       nasa_data       - MATLAB table containing NASA POWER data with
-%                         timestamps and meteorological variables. 
+%                         timestamps and meteorological variables. This table
+%                         should be created originally from get_project_data.
 %
 %       new_offset      - The desired timezone offset (e.g., -5 for EST, +9 for JST).
 %       original_offset - (Optional) The original timezone offset of the timestamps.

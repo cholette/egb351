@@ -1,18 +1,26 @@
 clearvars, close all
 
-%% Exercise 1
+%%%%%%%%%%%%%%%%% Exercise 1 %%%%%%%%%%%%%%%%%%%%%%
+
+%%(b)
 wind_data = import_nasa_power_wind(...
     'POWER_Point_Hourly_20150101_20241231_026d73S_151d47E_UTC.csv');
 wind_data = localize_time(wind_data,10)
 
-a=0.14;
+%% (c)
 pax = wind_rose(wind_data.WD50M);
+
+%%(d)--(e)
+a=1/7.0;
 wind_data.WS100M = wind_data.WS50M * (100/50)^a;
+wind_data.P100M = wind_data.PS 
+
+%% (e)
 v_bar_100 = mean(wind_data.WS100M);
-
-ws_grid_100 = linspace(min(wind_data.WS100M),max(wind_data.WS100M),1000);
-
 fprintf('Mean: %.2f, Std dev: %.2f\n',v_bar_100,std(wind_data.WS100M))
+
+%% (f)--(g)
+ws_grid_100 = linspace(min(wind_data.WS100M),max(wind_data.WS100M),1000);
 dist = fitdist(wind_data.WS100M,"Weibull");
 
 figure
@@ -24,6 +32,7 @@ xlabel('Wind speed @ 100m (m/s)')
 ylabel('Density')
 hold off
 
+%% (h) WPD
 rho_air = 1.20; % kg/m3
 c = dist.a; % scale parameter
 Ke = gamma(1+3/dist.b)/(gamma(1+1/dist.b)^3);
@@ -32,18 +41,18 @@ WPD_analytical = 0.5*rho_air*gamma(1+3/dist.b)*c^3;
 fprintf('WPD (using average): %.2f kW/m^2 \n',WPD)
 fprintf('WPD (analytical): %.2f kW/m^2 \n',WPD_analytical)
 
-% velocity-duration curve
-% [fig,ax] = velocity_duration(ws); % brute force way for case with lots of
-% duplicates
+%% (i) velocity-duration curve
 sorted_ws = sort(wind_data.WS100M);
-hours_above = (length(sorted_ws)-1):-1:0; % smarter way from Chiara when speeds are unique
+hours_above = (length(sorted_ws)-1):-1:0; 
 figure()
 plot(hours_above*8760/length(sorted_ws),sorted_ws,'LineWidth',2)
 ax = gca;
 xlabel('Number of hours per year')
 ylabel('Wind speed')
 
-%% Exercise 2
+%%%%%%%%%%%%%%%%%%%%%%%%%% Exercise 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% (a) -- (c)
 % locate SAM turbine definition file and paste strings in here
 parse_sam =@(x) double(regexp(x,'\|','split'));
 
@@ -87,10 +96,14 @@ hold off
 ylabel('Density')
 xlabel('Wind speed (m/s)')
 
-% aep and power duration curves
+%% (d) aep and power duration curves
 aep_ge = compute_aep(ge,dist_ge);
 aep_siemens = compute_aep(siemens,dist_siemens);
+fprintf('GE AEP: %.2f GWh \n',aep_ge/1e6)
+fprintf('Siemens AEP: %.2f GWh \n',aep_siemens/1e6)
 
+
+%% (e) Turbine Power duration curves
 figure("Name","Power duration curves")
 % [power_ge,hours_exceeded_ge] = power_duration(ge,dist_ge); % alternate
 powerfun_ge = griddedInterpolant(ge.speeds,ge.power_kw);
@@ -107,36 +120,63 @@ plot(hours_exceeded_siemens,power_siemens,'r-',LineWidth=2.0,DisplayName='Siemen
 xlabel("Hours per year")
 ylabel("Power (kW)")
 
-% 2023 data only
+%% 2023 data only
 power_ge = griddedInterpolant(ge.speeds,ge.power_kw);
 power_siemens = griddedInterpolant(siemens.speeds,siemens.power_kw);
-wind_data_2023 = wind_data(year(wind_data.timestamp)==2024,:);
+wind_data_2023 = wind_data(year(wind_data.timestamp)==2023,:);
+
+% use same technique for wind speed duration curve
 ep_2023_ge = sum(power_ge(wind_data_2023.WS80M));
+sorted_power_ge = sort(power_ge(wind_data_2023.WS80M));
+hours_ge = (length(sorted_power_ge)-1):-1:0; 
+
 ep_2023_siemens = sum(power_siemens(wind_data_2023.WS90M));
+sorted_power_siemens = sort(power_siemens(wind_data_2023.WS90M));
+hours_siemens = (length(sorted_power_siemens)-1):-1:0; 
 
-speeds_ge = linspace(0,max(ge.speeds),1000);
-power_2023_ge = power_ge(wind_data_2023.WS80M);
-powers_ge = unique(ge.power_kw);
-hours_ge = zeros(size(powers_ge));
-for ii = 1:length(powers_ge)
-    hours_ge(ii) = sum(power_2023_ge>powers_ge(ii)); 
-end
+fprintf('GE 2023 Production: %.2f GWh \n',ep_2023_ge/1e6)
+fprintf('Siemens 2023 Production: %.2f GWh \n',ep_2023_siemens/1e6)
 
-speeds_siemens = linspace(0,max(siemens.speeds),1000);
-power_2023_siemens = power_siemens(wind_data_2023.WS90M);
-powers_siemens = unique(siemens.power_kw);
-hours_siemens = zeros(size(powers_siemens));
-for ii = 1:length(powers_siemens)
-    hours_siemens(ii) = sum(power_2023_siemens>powers_siemens(ii)); 
-end
+% Old, slow method for power curve
+% hours_above = (length(sorted_ws)-1):-1:0; 
+% speeds_ge = linspace(0,max(ge.speeds),1000);
+% power_2023_ge = power_ge(wind_data_2023.WS80M);
+% powers_ge = unique(power_2023_ge);
+% hours_ge = zeros(size(powers_ge));
+% for ii = 1:length(powers_ge)
+%     hours_ge(ii) = sum(power_2023_ge>powers_ge(ii)); 
+% end
+% 
+% speeds_siemens = linspace(0,max(siemens.speeds),1000);
+% power_2023_siemens = power_siemens(wind_data_2023.WS90M);
+% powers_siemens = unique(power_2023_siemens);
+% hours_siemens = zeros(size(powers_siemens));
+% for ii = 1:length(powers_siemens)
+%     hours_siemens(ii) = sum(power_2023_siemens>powers_siemens(ii)); 
+% end
 
-plot(hours_ge,powers_ge,'b--',LineWidth=2,DisplayName="GE 2023 Only")
-plot(hours_siemens,powers_siemens,'r--',LineWidth=2,DisplayName="Siemens 2023 Only")
+plot(hours_ge,sorted_power_ge,'b--',LineWidth=2,DisplayName="GE 2023 Only")
+hold on
+plot(hours_siemens,sorted_power_siemens,'r--',LineWidth=2,DisplayName="Siemens 2023 Only")
 legend()
 hold off
 title("Power Duration Curves")
 
-% Adding direction columns and exporting 2023 data
+%% Adding direction columns and exporting 2023 data
 wind_data.WD80M = wind_data.WD50M; % assuming direction is the same
 wind_data.WD90M = wind_data.WD50M;
-sam_export(wind_data,[datetime(2023,1,1,0,0,0),datetime(2023,12,31,23,59,59)],-27.73,151.47,10)
+sam_export(wind_data,[datetime(2023,1,1,0,0,0),...
+    datetime(2023,12,31,23,59,59)],-26.73,151.47,10)
+
+%% OPTIONAL: check density correction in SAM for GE Turbine
+% SAM does an air density correction (sec 7.3 of [1]). 
+%  [1]  J. Freeman, J. Jorgenson, P. Gilman, and T. Ferguson, 
+%       "Reference Manual for the System Advisor Model's Wind Power Performance 
+%       Model," National Renewable Energy Laboratory (NREL), Golden, CO., 
+%       NREL/TP-6A20-60570, Aug. 2014. doi: 10.2172/1150800.
+
+pressure_pa = wind_data_2023.PS; % Pa
+temp = wind_data_2023.T2M + 273.15; % K
+R_air = 287.058; % J/kg/K
+air_density = pressure_pa./R_air./temp; % in Pa
+ep_2023_ge_SAM = sum(power_ge(wind_data_2023.WS80M).*air_density/1.225);
