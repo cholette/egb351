@@ -1,6 +1,6 @@
 clearvars, close all
 
-%%%%%%%%%%%%%%%%% Exercise 1 %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Exercise 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%(b)
 wind_data = import_nasa_power_wind(...
@@ -21,7 +21,8 @@ fprintf('Mean: %.2f, Std dev: %.2f\n',v_bar_100,std(wind_data.WS100M))
 
 %% (f)--(g)
 ws_grid_100 = linspace(min(wind_data.WS100M),max(wind_data.WS100M),1000);
-dist = fitdist(wind_data.WS100M,"Weibull");
+dist = fitdist(wind_data.WS100M,"Weibull")
+
 
 figure
 histogram(wind_data.WS100M,"DisplayName","Data",'Normalization','pdf')
@@ -42,11 +43,11 @@ fprintf('WPD (using average): %.2f kW/m^2 \n',WPD)
 fprintf('WPD (analytical): %.2f kW/m^2 \n',WPD_analytical)
 
 %% (i) velocity-duration curve
-sorted_ws = sort(wind_data.WS100M);
-hours_above = (length(sorted_ws)-1):-1:0; 
+sorted_ws = sort(wind_data.WS100M); 
+hours_above = (length(sorted_ws)-1):-1:0; % The lowest wind speed is >= exactly one value (itself)
 figure()
-plot(hours_above*8760/length(sorted_ws),sorted_ws,'LineWidth',2)
-ax = gca;
+num_years = length(sorted_ws)/8760;
+plot(hours_above/num_years,sorted_ws,'LineWidth',2)
 xlabel('Number of hours per year')
 ylabel('Wind speed')
 
@@ -61,14 +62,19 @@ ge.power_kw = parse_sam("0|0|0|38|154|405|693|986|1323|1506|1578|1600|1600|1600|
 ge.hub_height = 80;
 wind_data.WS80M = wind_data.WS50M * (ge.hub_height/50)^a;
 ws_grid_80 = linspace(min(wind_data.WS80M),max(wind_data.WS80M),1000);
-dist_ge = fitdist(wind_data.WS80M,"Weibull");
+
+fprintf("Parameters for GE Turbine:\n")
+dist_ge = fitdist(wind_data.WS80M,"Weibull")
+
 
 siemens.speeds = parse_sam("1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30");
 siemens.power_kw = parse_sam("0|0|0|127|285|512|795|1140|1587|2120|2770|3287|3500|3578|3600|3600|3600|3600|3600|3600|3600|3600|3600|3600|3600|0|0|0|0|0");
 siemens.hub_height = 90;
 wind_data.WS90M = wind_data.WS50M * (siemens.hub_height/50)^a;
 ws_grid_90 = linspace(min(wind_data.WS90M),max(wind_data.WS90M),1000);
-dist_siemens = fitdist(wind_data.WS90M,"Weibull");
+
+fprintf("Parameters for Siemens Turbine:\n")
+dist_siemens = fitdist(wind_data.WS90M,"Weibull")
 
 figure('Name','GE Little One')
 yyaxis left
@@ -125,7 +131,7 @@ power_ge = griddedInterpolant(ge.speeds,ge.power_kw);
 power_siemens = griddedInterpolant(siemens.speeds,siemens.power_kw);
 wind_data_2023 = wind_data(year(wind_data.timestamp)==2023,:);
 
-% use same technique for wind speed duration curve
+% use same technique as for wind speed duration curve
 ep_2023_ge = sum(power_ge(wind_data_2023.WS80M));
 sorted_power_ge = sort(power_ge(wind_data_2023.WS80M));
 hours_ge = (length(sorted_power_ge)-1):-1:0; 
@@ -180,3 +186,5 @@ temp = wind_data_2023.T2M + 273.15; % K
 R_air = 287.058; % J/kg/K
 air_density = pressure_pa./R_air./temp; % in Pa
 ep_2023_ge_SAM = sum(power_ge(wind_data_2023.WS80M).*air_density/1.225);
+fprintf('GE 2023 Production (with SAM air density correction): %.2f GWh \n',...
+    ep_2023_ge_SAM/1e6)
