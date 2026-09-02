@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egb351"
+version = "0.1.0.dev0"
+description = "Python utilities for EGB351 Renewable Electrical Energy Sources"
+requires-python = ">=3.10"
+dependencies = [
+    "coolprop==8.0.0",
+    "ipykernel==7.3.0",
+    "ipython==8.27.0",
+    "ipywidgets==8.1.7",
+    "matplotlib==3.10.5",
+    "numpy==2.3.2",
+    "pandas==2.3.1",
+    "pysolar==0.13",
+    "pyviewfactor==1.0.0",
+    "pyvista==0.48.4",
+    "scipy==1.16.1",
+    "sympy==1.14.0",
+    "tqdm==4.67.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

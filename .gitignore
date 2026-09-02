@@ -5,3 +5,6 @@ sam/
 outputs/
 *__pycache__*
 *.asv
+*.egg-info/
+build/
+dist/
