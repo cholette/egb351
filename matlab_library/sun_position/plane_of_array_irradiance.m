@@ -6,7 +6,7 @@ function [GPOA,varargout] = plane_of_array_irradiance(beta,gamma,rho,...
 
     DHI = GHI - DNI.*cosd(solar_zenith);
 
-    % this can be done without another function in class
+    % this can be done without function in class
     AOI = angle_of_incidence([beta,gamma],[solar_zenith,solar_azimuth]);  
     
     direct = DNI.*cosd(AOI);
